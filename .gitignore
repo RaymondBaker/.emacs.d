@@ -1,10 +1,9 @@
-/url/cache
-/.emacs.desktop
-/auto-save-list
-/network-security.data
-/.session
-/session.*
-/custom.el
+url/cache
+.emacs.desktop
+auto-save-list
+network-security.data
+.session
+session.*
 *.elc
 CVS
 .svn

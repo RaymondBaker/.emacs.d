@@ -25,7 +25,6 @@
 (load-theme 'ef-elea-dark t)
 
 
-
 ;;; Vim Bindings
 (define-prefix-command 'md/leader-map)
 
@@ -44,10 +43,18 @@
   (setq evil-undo-system 'undo-fu)
   :config
   (progn
-  ;; Can't work out how to properly define map bindings using ":bind"
-  (bind-key "<SPC>" md/leader-map evil-normal-state-map)
-  (bind-key "<SPC>" md/leader-map evil-visual-state-map)
-  (evil-mode 1)))
+    ;; Can't work out how to properly define map bindings using ":bind"
+    (bind-key "<SPC>" md/leader-map evil-normal-state-map)
+    (bind-key "<SPC>" md/leader-map evil-visual-state-map)
+    ;; For all modes
+    (evil-mode 1)))
+
+
+;; w or e, etc will go over _ + -
+(add-hook 'prog-mode-hook
+          (lambda ()
+	    (modify-syntax-entry ?_ "w")
+	    (modify-syntax-entry ?- "w")))
 
 ;(use-package evil-cleverparens
 ;  :ensure t
@@ -71,22 +78,9 @@
   (setq evil-want-integration t)
   (evil-collection-init))
 
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("d609d9aaf89d935677b04d34e4449ba3f8bbfdcaaeeaab3d21ee035f43321ff1" "ae20535e46a88faea5d65775ca5510c7385cbf334dfa7dde93c0cd22ed663ba0" "d6b369a3f09f34cdbaed93eeefcc6a0e05e135d187252e01b0031559b1671e97" "a0e9bc5696ce581f09f7f3e7228b949988d76da5a8376e1f2da39d1d026af386" "296dcaeb2582e7f759e813407ff1facfd979faa071cf27ef54100202c45ae7d4" "2551f2b4bc12993e9b8560144fb072b785d4cddbef2b6ec880c602839227b8c7" "211621592803ada9c81ec8f8ba0659df185f9dc06183fcd0e40fbf646c995f23" "59c36051a521e3ea68dc530ded1c7be169cd19e8873b7994bfc02a216041bf3b" "5a0ddbd75929d24f5ef34944d78789c6c3421aa943c15218bac791c199fc897d" default))
- '(package-selected-packages
-   '(vue-mode jinx modus-themes shell-pop shell-pop-el treemacs-icons-dired treemacs-evil treemacs envrc exec-path-from-shell pet treesit-auto flycheck company lsp-pyright pip-requirements pyvenv lsp-ui lsp-mode undo-fu-session evil-collection evil-surround evil)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(defvar custom-file)
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file)
 
 ;; == Undo system ===
 (use-package undo-fu)
@@ -105,6 +99,7 @@
       line-number-mode t
       column-number-mode t)
 (scroll-bar-mode -1)
+(setq-default show-trailing-whitespace t)
 ;(customize-set-variable 'scroll-bar-mode nil)
 ;(customize-set-variable 'horizontal-scroll-bar-mode nil)
 
@@ -166,7 +161,7 @@
   (add-to-list 'company-transformers #'company-sort-by-occurrence)
   (defun add-pcomplete-to-capf ()
     (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
-  (add-hook 'org-mode-hook #'add-pcomplete-to-capf)
+  ;(add-hook 'org-mode-hook #'add-pcomplete-to-capf)
   )
 
 (use-package treesit-auto
@@ -228,9 +223,10 @@
   :hook (python-ts-mode . (lambda ()
                                    (require 'lsp-pyright)
                                    (lsp-deferred))))  ; or lsp-deferred
+
+;; === Spell Check ===
 (use-package jinx
-  :hook ((text-mode
-	  org-mode)
+  :hook ((org-mode)
 	  . jinx-mode)
   :bind (("C-;" . jinx-correct))
   :custom
@@ -263,6 +259,10 @@
 
 
 (use-package shell-pop
+  :config
+  ;; Dont allow prompt to be deleted
+  (defvar comint-prompt-read-only)
+  (setq comint-prompt-read-only t)
   :bind
   (:map global-map
 	("C-c t" . shell-pop)))
@@ -296,5 +296,5 @@
 (use-package envrc)
 (envrc-global-mode)
 
-;(provide '.emacs)
-;;; .emacs ends here
+(provide 'init)
+;;; init.el ends here
