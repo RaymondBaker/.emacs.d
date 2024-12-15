@@ -133,11 +133,11 @@
 (savehist-mode t)
 
 ;; Org Settings
-(defvar org-default-notes-file)
-(defvar initial-buffer-choice)
-(setq
- org-default-notes-file "~/org/index.org"
- initial-buffer-choice  org-default-notes-file) ; open org index by default
+;(defvar org-default-notes-file)
+;(defvar initial-buffer-choice)
+;(setq
+; org-default-notes-file "~/org/index.org"
+; initial-buffer-choice  org-default-notes-file) ; open org index by default
 
 ;; use bold instead of showing mark down
 (defvar org-hide-emphasis-markers)
@@ -282,6 +282,7 @@
         ("C-x t B"   . treemacs-bookmark)
         ("C-x t C-t" . treemacs-find-file)
         ("C-x t M-t" . treemacs-find-tag)))
+(treemacs-start-on-boot)
 
 (use-package treemacs-evil
   :after (treemacs evil)
@@ -291,7 +292,14 @@
   :hook (dired-mode . treemacs-icons-dired-enable-once)
   :ensure t)
 
-(treemacs-start-on-boot)
+
+;; SuperCollider prereq
+(use-package sclang
+  :ensure nil
+  :load-path "~/.local/share/SuperCollider/downloaded-quarks/scel/el")
+
+(use-package w3m
+  :ensure t)
 
 (use-package envrc)
 (envrc-global-mode)
