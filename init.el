@@ -112,6 +112,7 @@
                 eshell-mode-hook
                 vterm-mode-hook
                 compilation-mode        ;; <----
+		w3m-mode-hook
                 telega-root-mode-hook
                 telega-chat-mode-hook
                 erc-mode-hook))
@@ -156,6 +157,8 @@
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0) ;; default is 0.2
   (company-dabbrev-downcase nil)
+  (company-dabbrev-code-ignore-case t)
+  ;(company-dabbrev-ignore-case t)
   :config
   (global-company-mode t)
   (add-to-list 'company-transformers #'company-sort-by-occurrence)
@@ -292,14 +295,41 @@
   :hook (dired-mode . treemacs-icons-dired-enable-once)
   :ensure t)
 
+(use-package csound-mode
+  :ensure t
+  :custom
+  (csound-skeleton-default-options "-d -oadc -W -3 -+rtmidi=alsa -Ma -+rtaudio=alsa --limiter=0.95")
+  :config
+  ; Boot up csound repl with midi capabilities
+  ; Got this from https://github.com/hlolli/csound-mode/blob/main/csound-repl.el#L515
+  (defun csound-repl--start-server (port console-port sr ksmps nchnls zero-db-fs)
+    "Function to start csound repl."
+    (start-process "Csound Server" csound-repl-buffer-name
+                   "csound" "-odac"
+		           "-+rtmidi=alsa""-Ma"
+		           "-+rtaudio=alsa" "--limiter=0.95"
+                   (format "--port=%s" port)
+                   (format "--udp-console=127.0.0.1:%s" console-port)
+                   (format "--sample-rate=%s" sr)
+                   (format "--ksmps=%s" ksmps)
+                   (format "--nchnls=%s" nchnls)
+                   (format "--0dbfs=%s" zero-db-fs)))
+;  (advice-add 'csound-repl--start-server :override #'csound-repl--start-server)
+  )
+;:config
 
-;; SuperCollider prereq
-(use-package sclang
-  :ensure nil
-  :load-path "~/.local/share/SuperCollider/downloaded-quarks/scel/el")
+; To fix csound output
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
+(defvar compilation-scroll-output)
+(setq compilation-scroll-output t)
 
-(use-package w3m
-  :ensure t)
+;;; SuperCollider prereq
+;(use-package sclang
+;  :ensure nil
+;  :load-path "~/.local/share/SuperCollider/downloaded-quarks/scel/el")
+;
+;(use-package w3m
+;  :ensure t)
 
 (use-package envrc)
 (envrc-global-mode)
