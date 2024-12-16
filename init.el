@@ -1,4 +1,4 @@
-﻿;;; package --- init-file
+﻿;; package --- init-file
 ;;; Author: Raymond Baker
 
 ;;; Commentary:
@@ -156,16 +156,22 @@
   :custom
   (company-minimum-prefix-length 1)
   (company-idle-delay 0.0) ;; default is 0.2
-  (company-dabbrev-downcase nil)
   (company-dabbrev-code-ignore-case t)
-  ;(company-dabbrev-ignore-case t)
+  (company-dabbrev-ignore-case t)
+  (company-dabbrev-downcase nil)
+  (company-dabbrev-minimum-length 1)
+  ; Remove dups
+  ; https://company-mode.github.io/manual/Backends.html#Candidates-Post_002dProcessing
+  ;(company-transformers '(delete-dups))
   :config
   (global-company-mode t)
-  (add-to-list 'company-transformers #'company-sort-by-occurrence)
+  ;(add-to-list 'company-transformers #'company-sort-by-occurrence)
+  ;(add-to-list 'company-transformers #'delete-consecutive-dups)
   (defun add-pcomplete-to-capf ()
     (add-hook 'completion-at-point-functions 'pcomplete-completions-at-point nil t))
   ;(add-hook 'org-mode-hook #'add-pcomplete-to-capf)
   )
+
 
 (use-package treesit-auto
   :functions global-treesit-auto-mode
@@ -299,9 +305,13 @@
   :ensure t
   :custom
   (csound-skeleton-default-options "-d -oadc -W -3 -+rtmidi=alsa -Ma -+rtaudio=alsa --limiter=0.95")
+  ; One way to simulate csound-mode as prog-mode (it has issues though
+  ;:hook
+  ;(csound-mode . prog-mode)
   :config
   ; Boot up csound repl with midi capabilities
   ; Got this from https://github.com/hlolli/csound-mode/blob/main/csound-repl.el#L515
+  (setq indent-line-function 'csound-indentation-line)
   (defun csound-repl--start-server (port console-port sr ksmps nchnls zero-db-fs)
     "Function to start csound repl."
     (start-process "Csound Server" csound-repl-buffer-name
