@@ -311,7 +311,6 @@
   :config
   ; Boot up csound repl with midi capabilities
   ; Got this from https://github.com/hlolli/csound-mode/blob/main/csound-repl.el#L515
-  (setq indent-line-function 'csound-indentation-line)
   (defun csound-repl--start-server (port console-port sr ksmps nchnls zero-db-fs)
     "Function to start csound repl."
     (start-process "Csound Server" csound-repl-buffer-name
